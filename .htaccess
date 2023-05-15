@@ -1,0 +1,38 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_METHOD} ^(OPTIONS)
+    RewriteRule .* - [F]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    RewriteCond %{REQUEST_FILENAME} -d [OR]
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ ^$1 [N]
+
+    RewriteCond %{REQUEST_URI} (\.\w+$) [NC]
+    RewriteRule ^(.*)$ public/$1
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ server.php
+
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Frame-Options same-origin
+    Header always set Referrer-Policy same-origin
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set X-Content-Type-Options nosniff
+    RequestHeader set X-HTTPS 1
+    Header add Access-Control-Allow-Methods "HEAD, GET, POST, PUT, PATCH, DELETE"
+    Header add Access-Control-Allow-Origin "*"
+    Header add Access-Control-Allow-Headers "*"
+    Header add Content-Security-Policy "default-src 'self' fonts.gstatic.com www.gstatic.com www.google.com 'nonce-%{CSP_NONCE}e'; script-src 'self' fonts.gstatic.com www.gstatic.com www.google.com 'nonce-%{CSP_NONCE}e'; style-src 'self' 'nonce-%{CSP_NONCE}e' fonts.googleapis.com fonts.gstatic.com;"
+    Header add Access-Control-Expose-Headers "Authorization, X-Pagination-Total-Pages, X-Pagination-Current-Page, X-Pagination-Page-Limit, X-Pagination-Total-Items, Content-Type, content-type"
+</IfModule>
